@@ -12,7 +12,8 @@ import {
   Backpack,
   Navigation,
   Globe2,
-  ExternalLink
+  ExternalLink,
+  Heart
 } from 'lucide-react';
 import { formatDistanceLabel } from '../utils/geoUtils';
 
@@ -21,6 +22,8 @@ export function ActivityDetailModal({
   onClose, 
   isBookmarked, 
   onToggleBookmark, 
+  isFavorite,
+  onToggleFavorite,
   isCompared, 
   onToggleCompare,
   computedDistanceKm 
@@ -52,9 +55,13 @@ export function ActivityDetailModal({
         {/* Source Attribution Alert Banner */}
         <div className="source-attribution-banner">
           <div className="source-attr-left">
-            <Globe2 size={16} className="text-emerald" />
+            {activity.isUserImported ? (
+              <Sparkles size={16} className="text-emerald" />
+            ) : (
+              <Globe2 size={16} className="text-emerald" />
+            )}
             <div>
-              <strong>Verified Discovery • {activity.sourcePlatform}</strong>
+              <strong>{activity.isUserImported ? 'Community Discovery' : 'Verified Discovery'} • {activity.sourcePlatform}</strong>
               <p className="source-attr-desc">{activity.sourceSnippet}</p>
             </div>
           </div>
@@ -201,6 +208,18 @@ export function ActivityDetailModal({
         {/* Modal Actions Footer */}
         <div className="modal-actions-footer">
           <div className="footer-left-buttons">
+            {/* Favorite Action Button */}
+            <button 
+              type="button"
+              className={`btn btn-modal-action ${isFavorite ? 'saved-rose' : ''}`}
+              onClick={() => onToggleFavorite(activity)}
+              title={isFavorite ? 'Remove from favorites' : 'Mark as favorite'}
+            >
+              <Heart size={15} fill={isFavorite ? 'currentColor' : 'none'} className={isFavorite ? 'text-rose' : ''} />
+              <span>{isFavorite ? 'Favorited' : 'Favorite'}</span>
+            </button>
+
+            {/* Bucket List Action Button */}
             <button 
               type="button"
               className={`btn btn-modal-action ${isBookmarked ? 'saved' : ''}`}

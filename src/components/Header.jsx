@@ -6,7 +6,9 @@ import {
   Scale, 
   Radar, 
   MapPin, 
-  Download
+  Download,
+  Heart,
+  Plus
 } from 'lucide-react';
 
 export function Header({ 
@@ -14,10 +16,13 @@ export function Header({
   isScanning, 
   savedCount, 
   onOpenBucketList, 
+  favoriteCount,
+  onOpenFavorites,
   compareCount, 
   onOpenPlanner,
   onOpenInsights,
   onOpenExport,
+  onOpenImport,
   currentLocationName,
   filteredCount
 }) {
@@ -47,6 +52,17 @@ export function Header({
 
         {/* Header Actions */}
         <div className="header-actions">
+          {/* Import Hobby Button (Prominent) */}
+          <button 
+            className="btn btn-header-action btn-header-import"
+            onClick={onOpenImport}
+            title="Import a hobby from any web link or URL"
+            aria-label="Import Hobby"
+          >
+            <Plus size={16} className="text-emerald" />
+            <span className="btn-label font-bold">Import Hobby</span>
+          </button>
+
           {/* Live Activity Radar button */}
           <button 
             className="btn btn-header-action btn-radar"
@@ -59,15 +75,28 @@ export function Header({
             <span className="btn-label">{isScanning ? 'Scanning...' : 'Radar'}</span>
           </button>
 
-          {/* Vibe Insights */}
+          {/* Favorites Button */}
           <button 
-            className="btn btn-header-action"
-            onClick={onOpenInsights}
-            title="View activity trends and weekend analytics"
-            aria-label="Activity Insights"
+            className={`btn btn-header-action ${favoriteCount > 0 ? 'active-rose' : ''}`}
+            onClick={onOpenFavorites}
+            title="View your favorite hobbies"
+            aria-label={`Favorites (${favoriteCount} favorited)`}
           >
-            <BarChart3 size={15} />
-            <span className="btn-label">Insights</span>
+            <Heart size={15} fill={favoriteCount > 0 ? 'currentColor' : 'none'} className={favoriteCount > 0 ? 'text-rose' : ''} />
+            <span className="btn-label">Favorites</span>
+            {favoriteCount > 0 && <span className="header-badge badge-rose">{favoriteCount}</span>}
+          </button>
+
+          {/* Bucket List (Saved) */}
+          <button 
+            className={`btn btn-header-action ${savedCount > 0 ? 'active' : ''}`}
+            onClick={onOpenBucketList}
+            title="View your saved bucket list activities"
+            aria-label={`Bucket List (${savedCount} saved)`}
+          >
+            <Bookmark size={15} fill={savedCount > 0 ? 'currentColor' : 'none'} />
+            <span className="btn-label">Bucket List</span>
+            {savedCount > 0 && <span className="header-badge highlight">{savedCount}</span>}
           </button>
 
           {/* Planner / Compare */}
@@ -82,16 +111,15 @@ export function Header({
             {compareCount > 0 && <span className="header-badge">{compareCount}</span>}
           </button>
 
-          {/* Bucket List (Saved) */}
+          {/* Vibe Insights */}
           <button 
-            className={`btn btn-header-action ${savedCount > 0 ? 'active' : ''}`}
-            onClick={onOpenBucketList}
-            title="View your saved bucket list activities"
-            aria-label={`Bucket List (${savedCount} saved)`}
+            className="btn btn-header-action"
+            onClick={onOpenInsights}
+            title="View activity trends and weekend analytics"
+            aria-label="Activity Insights"
           >
-            <Bookmark size={15} fill={savedCount > 0 ? 'currentColor' : 'none'} />
-            <span className="btn-label">Bucket List</span>
-            {savedCount > 0 && <span className="header-badge highlight">{savedCount}</span>}
+            <BarChart3 size={15} />
+            <span className="btn-label">Insights</span>
           </button>
 
           {/* Export */}

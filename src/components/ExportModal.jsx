@@ -2,11 +2,20 @@ import React from 'react';
 import { X, Download, FileSpreadsheet, FileCode } from 'lucide-react';
 import { exportActivitiesToCSV, exportActivitiesToJSON } from '../utils/exportUtils';
 
-export function ExportModal({ isOpen, onClose, filteredActivities, savedActivities }) {
+export function ExportModal({ 
+  isOpen, 
+  onClose, 
+  filteredActivities = [], 
+  savedActivities = [],
+  favoriteActivities = []
+}) {
   if (!isOpen) return null;
 
   const handleExport = (format, dataset) => {
-    const data = dataset === 'saved' ? savedActivities : filteredActivities;
+    let data = filteredActivities;
+    if (dataset === 'saved') data = savedActivities;
+    else if (dataset === 'favorites') data = favoriteActivities;
+
     const name = `hobby-explorer-${dataset}-${new Date().toISOString().slice(0, 10)}`;
     if (format === 'csv') {
       exportActivitiesToCSV(data, `${name}.csv`);
@@ -24,7 +33,7 @@ export function ExportModal({ isOpen, onClose, filteredActivities, savedActiviti
             <Download size={22} className="text-emerald" />
             <div>
               <h3 className="export-title">Export Weekend Plans & Activities</h3>
-              <p className="export-subtitle">Download your filtered discoveries or saved bucket list</p>
+              <p className="export-subtitle">Download your filtered discoveries, bucket list, or favorites</p>
             </div>
           </div>
           <button className="modal-close-btn" onClick={onClose}>
@@ -47,7 +56,14 @@ export function ExportModal({ isOpen, onClose, filteredActivities, savedActiviti
                 onClick={() => handleExport('csv', 'filtered')}
                 disabled={filteredActivities.length === 0}
               >
-                Export Current Filtered ({filteredActivities.length})
+                Export Filtered ({filteredActivities.length})
+              </button>
+              <button 
+                className="btn btn-ghost btn-sm"
+                onClick={() => handleExport('csv', 'favorites')}
+                disabled={favoriteActivities.length === 0}
+              >
+                Export Favorites ({favoriteActivities.length})
               </button>
               <button 
                 className="btn btn-ghost btn-sm"
@@ -73,7 +89,14 @@ export function ExportModal({ isOpen, onClose, filteredActivities, savedActiviti
                 onClick={() => handleExport('json', 'filtered')}
                 disabled={filteredActivities.length === 0}
               >
-                Export Current Filtered ({filteredActivities.length})
+                Export Filtered ({filteredActivities.length})
+              </button>
+              <button 
+                className="btn btn-ghost btn-sm"
+                onClick={() => handleExport('json', 'favorites')}
+                disabled={favoriteActivities.length === 0}
+              >
+                Export Favorites ({favoriteActivities.length})
               </button>
               <button 
                 className="btn btn-ghost btn-sm"

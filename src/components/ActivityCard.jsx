@@ -6,7 +6,10 @@ import {
   Scale, 
   ExternalLink, 
   Eye, 
-  Star
+  Star,
+  Heart,
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 import { formatDistanceLabel } from '../utils/geoUtils';
 
@@ -14,9 +17,12 @@ export function ActivityCard({
   activity, 
   isBookmarked, 
   onToggleBookmark, 
+  isFavorite,
+  onToggleFavorite,
   isCompared, 
   onToggleCompare, 
   onSelectActivity,
+  onDeleteActivity,
   viewMode = 'grid',
   computedDistanceKm
 }) {
@@ -53,6 +59,12 @@ export function ActivityCard({
               <h3 className="activity-list-title" onClick={() => onSelectActivity(activity)}>
                 {activity.title}
               </h3>
+              {activity.isUserImported && (
+                <span className="badge-user-imported" title="Imported from web link">
+                  <Sparkles size={11} />
+                  <span>Imported</span>
+                </span>
+              )}
               <div className="list-rating">
                 <Star size={13} className="star-icon" fill="currentColor" />
                 <span>{activity.rating}</span>
@@ -91,22 +103,57 @@ export function ActivityCard({
         </div>
 
         <div className="list-col-actions">
+          {/* Favorite Button */}
+          <button 
+            type="button"
+            className={`btn-icon btn-favorite-toggle ${isFavorite ? 'saved-rose' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(activity);
+            }}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label="Toggle favorite"
+          >
+            <Heart size={15} fill={isFavorite ? 'currentColor' : 'none'} className={isFavorite ? 'text-rose' : ''} />
+          </button>
+
+          {/* Bucket List Bookmark Button */}
           <button 
             type="button"
             className={`btn-icon ${isBookmarked ? 'saved' : ''}`}
             onClick={() => onToggleBookmark(activity)}
             title={isBookmarked ? 'Remove from bucket list' : 'Add to bucket list'}
+            aria-label="Toggle bucket list"
           >
             <Bookmark size={15} fill={isBookmarked ? 'currentColor' : 'none'} />
           </button>
+
+          {/* Compare Button */}
           <button 
             type="button"
             className={`btn-icon ${isCompared ? 'saved' : ''}`}
             onClick={() => onToggleCompare(activity)}
             title={isCompared ? 'Remove from compare' : 'Compare activity'}
+            aria-label="Toggle compare"
           >
             <Scale size={15} />
           </button>
+
+          {/* Delete Imported Activity (if user-created) */}
+          {activity.isUserImported && onDeleteActivity && (
+            <button 
+              type="button"
+              className="btn-icon btn-delete-imported"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteActivity(activity.id);
+              }}
+              title="Delete imported hobby"
+            >
+              <Trash2 size={14} className="text-muted" />
+            </button>
+          )}
+
           <button 
             type="button"
             className="btn-details-sm"
@@ -132,7 +179,7 @@ export function ActivityCard({
 
   // GRID CARD VIEW LAYOUT
   return (
-    <div className={`activity-card ${isCompared ? 'is-compared' : ''}`}>
+    <div className={`activity-card ${isCompared ? 'is-compared' : ''} ${isFavorite ? 'card-favorite' : ''}`}>
       {/* 1. Media Header with Photo, Category Badge, Rating & Distance */}
       <div className="card-media-wrap" onClick={() => onSelectActivity(activity)}>
         <img 
@@ -148,7 +195,15 @@ export function ActivityCard({
 
         {/* Top Badges */}
         <div className="media-top-bar">
-          <span className="category-badge-chip">{activity.categoryLabel}</span>
+          <div className="media-top-left-chips">
+            <span className="category-badge-chip">{activity.categoryLabel}</span>
+            {activity.isUserImported && (
+              <span className="badge-user-imported-chip">
+                <Sparkles size={11} />
+                <span>Imported</span>
+              </span>
+            )}
+          </div>
           <div className="rating-badge-chip">
             <Star size={12} fill="currentColor" />
             <span>{activity.rating}</span>
@@ -201,22 +256,56 @@ export function ActivityCard({
       {/* 3. Card Actions Bar */}
       <div className="card-actions-bar">
         <div className="action-buttons-left">
+          {/* Favorite Button */}
+          <button 
+            type="button"
+            className={`btn-icon btn-favorite-toggle ${isFavorite ? 'saved-rose' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(activity);
+            }}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label="Toggle favorite"
+          >
+            <Heart size={15} fill={isFavorite ? 'currentColor' : 'none'} className={isFavorite ? 'text-rose' : ''} />
+          </button>
+
+          {/* Bucket List Bookmark Button */}
           <button 
             type="button"
             className={`btn-icon ${isBookmarked ? 'saved' : ''}`}
             onClick={() => onToggleBookmark(activity)}
             title={isBookmarked ? 'Remove from bucket list' : 'Add to bucket list'}
+            aria-label="Toggle bucket list"
           >
             <Bookmark size={15} fill={isBookmarked ? 'currentColor' : 'none'} />
           </button>
+
+          {/* Compare Button */}
           <button 
             type="button"
             className={`btn-icon ${isCompared ? 'saved' : ''}`}
             onClick={() => onToggleCompare(activity)}
             title={isCompared ? 'Remove from comparison' : 'Compare activity'}
+            aria-label="Toggle compare"
           >
             <Scale size={15} />
           </button>
+
+          {/* Delete Imported Activity */}
+          {activity.isUserImported && onDeleteActivity && (
+            <button 
+              type="button"
+              className="btn-icon btn-delete-imported"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteActivity(activity.id);
+              }}
+              title="Delete imported hobby"
+            >
+              <Trash2 size={14} className="text-muted" />
+            </button>
+          )}
         </div>
 
         <div className="action-buttons-right">
